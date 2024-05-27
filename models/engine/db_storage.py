@@ -61,7 +61,7 @@ class DBStorage:
 
     def delete(self, obj=None):
         """delete from the current database session obj if not None"""
-        if obj is not None:
+        if obj:
             self.__session.delete(obj)
 
     def reload(self):
@@ -76,16 +76,15 @@ class DBStorage:
         self.__session.remove()
 
     def get(self, cls, id):
-        '''method to retrieve one object'''
-        if cls and id:
-            tempo = cls, __name__ + "." + id
-            count = self.all(cls)
-            for key in count:
-                if key == tempo:
-                    return count[key]
-        else:
-            return None
+        """retrieve one object"""
+        if cls in classes.values():
+            for obj in self.all(cls).values():
+                if obj.id == id:
+                    return obj
+        return None
 
     def count(self, cls=None):
-        '''class (optional)'''
-        return (len(self.all(cls)))
+        """count number of objects in storage"""
+        if type(cls) == str:
+            return len(self.all(eval(cls)))
+        return len(self.all(cls))
